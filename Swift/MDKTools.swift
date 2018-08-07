@@ -21,7 +21,7 @@ import ObjectiveC.runtime
 //MARK:	根界面相关
 
 ///返回程序主窗口
-var MDKKeywindow : UIWindow {
+public var MDKKeywindow : UIWindow {
 	return UIApplication.shared.delegate!.window!!
 }
 
@@ -44,7 +44,7 @@ public var MDKRootViewController : UIViewController {
 }
 
 ///获取最顶部的NavgationController
-var MDKTopNavController : UINavigationController?{
+public var MDKTopNavController : UINavigationController?{
 
 	var nav = MDKRootViewController;
 	var lastNav:UINavigationController? = nil;
@@ -89,47 +89,47 @@ var MDKTopNavController : UINavigationController?{
 //MARK:	iOS设备版本相关
 
 ///获取的IOS版本
-var MDKiOS_version:Double{
+public var MDKiOS_version:Double{
 	return Double(UIDevice.current.systemVersion) ?? 0
 }
 
 
 ///判断获取的IOS版本是否大于 ver
-@inline(__always)  func MDKiOSUp(ver:Double) -> Bool {
+@inline(__always) public func MDKiOSUp(ver:Double) -> Bool {
 	return MDKiOS_version >= ver
 }
 
 
 ///判断获取的IOS版本是否小于 ver
-@inline(__always)  func MDKiOSDown(ver:Double) -> Bool {
+@inline(__always) public func MDKiOSDown(ver:Double) -> Bool {
 	return MDKiOS_version < ver
 }
 
 //MARK:	屏幕尺寸相关
 
 ///返回屏幕宽度
-var MDKScreenWidth:CGFloat{
+public var MDKScreenWidth:CGFloat{
 	return UIScreen.main.bounds.size.width
 }
 ///返回屏幕高度
-var MDKScreenHeight:CGFloat{
+public var MDKScreenHeight:CGFloat{
 	return UIScreen.main.bounds.size.height
 }
 
 
 ///iPhoneX上下元素内增的高度
-var MDKiPhoneXInset:CGFloat{
+public var MDKiPhoneXInset:CGFloat{
 	return (MDKScreenHeight >= 768) ? 24 : 0
 }
 
 
 ///通过storyboard的名字获取它的instantiateInitialViewController,bundle为nil
-@inline(__always)  func MDKSBInitial2VCWith(_ SBName:String) -> UIViewController {
+@inline(__always) public func MDKSBInitial2VCWith(_ SBName:String) -> UIViewController {
 	return UIStoryboard(name: SBName, bundle: nil).instantiateInitialViewController()!;
 }
 //MARK:	颜色相关
 ///获得RGBA颜色
-@inline(__always)  func MDKColor(_ red:Double,_ green:Double,_ blue:Double ,withAlpha alpha:Double) -> UIColor {
+@inline(__always) public func MDKColor(_ red:Double,_ green:Double,_ blue:Double ,withAlpha alpha:Double) -> UIColor {
 	if MDKiOS_Machine_Type == .iPhone , MDKiOS_MachineModel > 9 , #available(iOS 10.0, *) {
 		return UIColor(displayP3Red: CGFloat(red/255.0), green: CGFloat(green/255.0), blue: CGFloat(blue/255.0), alpha: CGFloat(alpha))
 	}
@@ -138,12 +138,12 @@ var MDKiPhoneXInset:CGFloat{
 
 
 ///获得RGB颜色
-@inline(__always)  func MDKColor(_ red:Double,_ green:Double,_ blue:Double) -> UIColor {
+@inline(__always) public func MDKColor(_ red:Double,_ green:Double,_ blue:Double) -> UIColor {
 	return MDKColor(red,green,blue,withAlpha: 1.0);
 }
 
 ///16进制转换RGB
-@inline(__always)  func MDKColorFrom(Hex intValue:UInt) -> UIColor {
+@inline(__always) public func MDKColorFrom(Hex intValue:UInt) -> UIColor {
 	if (intValue>0xFFFFFF) {
 		return MDKColor((Double((intValue & 0xFF000000) >> 32)), Double((intValue & 0xFF0000) >> 16), Double((intValue & 0xFF00) >> 8), withAlpha: Double(intValue & 0xFF))
 	}else{
@@ -152,7 +152,7 @@ var MDKiPhoneXInset:CGFloat{
 }
 
 ///16进制转换RGBA2.0,单独设置alpha
-@inline(__always)  func MDKColorFrom(Hex intValue:UInt , setAlpha alpha:Double) -> UIColor {
+@inline(__always) public func MDKColorFrom(Hex intValue:UInt , setAlpha alpha:Double) -> UIColor {
 	return MDKColor((Double((intValue & 0xFF0000) >> 16)), Double((intValue & 0xFF00) >> 8), Double(intValue & 0xFF), withAlpha:alpha)
 }
 extension String{
@@ -169,11 +169,11 @@ extension String{
 		return String(self[start ..< end])
 	}
 
-	func sub(to index: Int) -> String {
+	public func sub(to index: Int) -> String {
 		return String(self[..<self.index(self.startIndex, offsetBy: index)])
 	}
 
-	func sub(from index: Int) -> String {
+	public func sub(from index: Int) -> String {
 		return String(self[self.index(self.startIndex, offsetBy: index)...])
 	}
 
@@ -195,23 +195,23 @@ func MDKColorFrom(Hex hexString:String) -> UIColor {
 }
 
 ///不透明,相同颜色
-@inline(__always)  func MDKSameColor(_ same:Double) -> UIColor {
+@inline(__always) public func MDKSameColor(_ same:Double) -> UIColor {
 	return MDKColor(same, same, same)
 }
 
 ///设置透明,相同颜色
-@inline(__always)  func MDKSameColor(_ same:Double,alpha:Double) -> UIColor {
+@inline(__always) public func MDKSameColor(_ same:Double,alpha:Double) -> UIColor {
 	return MDKColor(same, same, same, withAlpha: alpha)
 }
 
 //创建随机色
-var MDKRandomColor : UIColor {
+public var MDKRandomColor : UIColor {
 	return MDKColor(Double(arc4random_uniform(256)), Double(arc4random_uniform(256)), Double(arc4random_uniform(256)))
 }
 
 
 ///从NSBundle加载Nib数组
-@inline(__always)  func MDKLoadXibArr(nibNamed:String , owner:Any? , option:[AnyHashable : Any]?) -> [UIView] {
+@inline(__always) public func MDKLoadXibArr(nibNamed:String , owner:Any? , option:[AnyHashable : Any]?) -> [UIView] {
 	return Bundle.main.loadNibNamed(nibNamed, owner: owner, options: option) as! [UIView]
 }
 ///通过一个字典来创建NSAttributedString,key可以是NSString,UIImage,NSAttributedString,value必须是NSDictionary;UIImage的value必须是@(CGRect)作为bounds,如果为空则用UIImage.size;NSAttributedString的value是无效的传@{}就行
@@ -244,7 +244,7 @@ var MDKRandomColor : UIColor {
 //	return attStr;
 //}
 ///改变状态栏颜色
-@inline(__always)  func MDKChangeStatusBarBackgroundColor(color:UIColor) -> () {
+@inline(__always) public func MDKChangeStatusBarBackgroundColor(color:UIColor) -> () {
 	if
 		let statusBarWindow = UIApplication.shared.value(forKey: "statusBarWindow") as? UIView,
 		let statusBar = statusBarWindow.value(forKey: "statusBar") as? UIView,
@@ -258,7 +258,7 @@ var MDKRandomColor : UIColor {
 
 #if canImport(Foundation)
 
-enum MDKiOSMachineType {
+public enum MDKiOSMachineType {
 	case Unknow
 	case iPhone
 	case iPad
@@ -266,17 +266,17 @@ enum MDKiOSMachineType {
 }
 
 
-var __iOS_MachineModel:Double = 0;
-var __iOS_MachineType:MDKiOSMachineType = .Unknow;
+public var __iOS_MachineModel:Double = 0;
+public var __iOS_MachineType:MDKiOSMachineType = .Unknow;
 
-var MDKiOS_MachineModel : Double{
+public var MDKiOS_MachineModel : Double{
 	if (__iOS_MachineModel < 1) {
 		creat_iOS_info();
 	}
 	return __iOS_MachineModel;
 }
 
-var MDKiOS_Machine_Type : MDKiOSMachineType{
+public var MDKiOS_Machine_Type : MDKiOSMachineType{
 	if (__iOS_MachineType == .Unknow) {
 		creat_iOS_info();
 	}
@@ -339,18 +339,18 @@ func creat_iOS_info()->(){
 //MARK:	角度制 弧度制相关
 
 ///角度制转弧度制
-@inline(__always)  func MDKAngleToRadian(_ angle:Double) -> Double {
+@inline(__always) public func MDKAngleToRadian(_ angle:Double) -> Double {
 	return angle / 180.0 * Double.pi;
 }
 
 //MARK:	URL相关
 ///用NSString返回一个URL
-@inline(__always)  func MDKURL(_ unUTF8str:String) -> URL {
+@inline(__always) public func MDKURL(_ unUTF8str:String) -> URL {
 	return URL(string: unUTF8str) ?? URL(string: "")!
 }
 
 ///用NSString返回一个转换了含有非英文字符的URL
-@inline(__always)  func MDKURL(Encoding unUTF8str:String) -> URL {
+@inline(__always) public func MDKURL(Encoding unUTF8str:String) -> URL {
 	if let UTF8str = unUTF8str.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) {
 		return MDKURL(UTF8str)
 	}else{
@@ -359,12 +359,12 @@ func creat_iOS_info()->(){
 }
 
 ///用NSString返回一个转换了含有非英文字符的URLRequest
-@inline(__always)  func MDKURLRequest(_ unUTF8str:String) -> URLRequest {
+@inline(__always) public func MDKURLRequest(_ unUTF8str:String) -> URLRequest {
 	return URLRequest(url: MDKURL(unUTF8str))
 }
 
 ///用NSString返回一个转换了含有非英文字符的URLRequest
-@inline(__always)  func MDKURLRequest(Encoding unUTF8str:String) -> URLRequest {
+@inline(__always) public func MDKURLRequest(Encoding unUTF8str:String) -> URLRequest {
 	return URLRequest(url: MDKURL(Encoding: unUTF8str))
 }
 
@@ -381,17 +381,17 @@ extension CGSize{
 //MARK:	沙盒目录相关
 
 ///输入文件名(NSString)，返回Temporary目录下的文件路径(NSString)
-@inline(__always)  func MDKFileTempWith(_ tempFileName:String) -> String {
+@inline(__always) public func MDKFileTempWith(_ tempFileName:String) -> String {
 	return MDKURL(NSTemporaryDirectory()).appendingPathComponent(tempFileName).absoluteString
 }
 
 ///输入文件名(NSString)，返回library/Cache目录下的文件路径(NSString)
-@inline(__always)  func MDKFileCacheWith(_ cacheFileName:String) -> String {
+@inline(__always) public func MDKFileCacheWith(_ cacheFileName:String) -> String {
 	return MDKURL(NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).last ?? "").appendingPathComponent(cacheFileName).absoluteString
 }
 
 ///输入文件名(NSString)，返回Document目录下的文件路径(NSString)
-@inline(__always)  func MDKFileDocumentWith(_ documentFileName:String) -> String {
+@inline(__always) public func MDKFileDocumentWith(_ documentFileName:String) -> String {
 	return MDKURL(NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).last ?? "").appendingPathComponent(documentFileName).absoluteString
 }
 
@@ -402,7 +402,7 @@ extension CGSize{
 
 #if canImport(UIKit)
 extension UIView{
-	func MDKEnableRedBackground() -> () {
+	public func MDKEnableRedBackground() -> () {
 		#if DEBUG
 		backgroundColor = .red
 		#endif
@@ -410,7 +410,7 @@ extension UIView{
 }
 
 extension UITableView{
-	func MDKRegister(Cell cellClass:AnyClass) -> () {
+	public func MDKRegister(Cell cellClass:AnyClass) -> () {
 
 		let classFullName = NSStringFromClass(cellClass)
 		let splitArr = classFullName.split(separator: ".")
@@ -426,10 +426,10 @@ extension UITableView{
 		}
 	}
 
-	func MDKRegister(Footer footerClass:AnyClass) -> () {
+	public func MDKRegister(Footer footerClass:AnyClass) -> () {
 		MDKRegister(Header: footerClass)
 	}
-	func MDKRegister(Header headerClass:AnyClass) -> () {
+	public func MDKRegister(Header headerClass:AnyClass) -> () {
 
 		let classFullName = NSStringFromClass(headerClass)
 		let splitArr = classFullName.split(separator: ".")
@@ -447,7 +447,7 @@ extension UITableView{
 }
 
 extension UICollectionView{
-	func MDKRegister(Cell cellClass:AnyClass) -> () {
+	public func MDKRegister(Cell cellClass:AnyClass) -> () {
 
 		let classFullName = NSStringFromClass(cellClass)
 		let splitArr = classFullName.split(separator: ".")
@@ -463,11 +463,11 @@ extension UICollectionView{
 		}
 	}
 
-	func MDKRegister(Footer footerClass:AnyClass) -> () {
+	public func MDKRegister(Footer footerClass:AnyClass) -> () {
 		MDKRegister(viewClass: footerClass, isHeader: false)
 	}
 
-	func MDKRegister(Header headerClass:AnyClass) -> () {
+	public func MDKRegister(Header headerClass:AnyClass) -> () {
 		MDKRegister(viewClass: headerClass, isHeader: true)
 	}
 
@@ -532,33 +532,33 @@ extension UIFont{
 	}
 }
 extension UIAlertController{
-	typealias UIAlertActionClose = (UIAlertAction)->()
+	public typealias UIAlertActionClose = (UIAlertAction)->()
 
 	@discardableResult
-	func MDKAdd(Default Action:@escaping UIAlertActionClose,title:String , handler:UIAlertActionClose? = nil) -> UIAlertController {
+	public func MDKAdd(Default Action:@escaping UIAlertActionClose,title:String , handler:UIAlertActionClose? = nil) -> UIAlertController {
 		let action = UIAlertAction(title: title, style: .default, handler: Action)
 		handler?(action)
 		addAction(action)
 		return self
 	}
 	@discardableResult
-	func MDKAdd(Cancel Action:@escaping (UIAlertAction)->(),title:String , handler:UIAlertActionClose? = nil) -> UIAlertController {
+	public func MDKAdd(Cancel Action:@escaping (UIAlertAction)->(),title:String , handler:UIAlertActionClose? = nil) -> UIAlertController {
 		let action = UIAlertAction(title: title, style: .cancel, handler: Action)
 		handler?(action)
 		addAction(action)
 		return self
 	}
 	@discardableResult
-	func MDKAdd(Destructive Action:@escaping (UIAlertAction)->(),title:String , handler:UIAlertActionClose? = nil) -> UIAlertController {
+	public func MDKAdd(Destructive Action:@escaping (UIAlertAction)->(),title:String , handler:UIAlertActionClose? = nil) -> UIAlertController {
 		let action = UIAlertAction(title: title, style: .destructive, handler: Action)
 		handler?(action)
 		addAction(action)
 		return self
 	}
 
-	typealias UIAlertTextFieldClose = (UITextField)->()
+	public typealias UIAlertTextFieldClose = (UITextField)->()
 	@discardableResult
-	func MDKAdd(TextField  Action:@escaping UIAlertTextFieldClose , handler:UIAlertTextFieldClose? = nil) -> UIAlertController {
+	public func MDKAdd(TextField  Action:@escaping UIAlertTextFieldClose , handler:UIAlertTextFieldClose? = nil) -> UIAlertController {
 		let textFieldBefore = self.textFields ?? []
 		addTextField(configurationHandler: Action)
 		let textFieldAfter = self.textFields?.filter(){textField in
@@ -570,7 +570,7 @@ extension UIAlertController{
 
 		return self
 	}
-	func MDKQuickPresented() -> () {
+	public func MDKQuickPresented() -> () {
 		MDKRootViewController.present(self, animated: true, completion: nil)
 	}
 }
@@ -579,7 +579,7 @@ extension UIAlertController{
 
 
 #if canImport(Foundation)
-@inline(__always)  func MDKDispatch_queue_async_safe(_ queue:DispatchQueue , _ action:@escaping ()->()) -> () {
+@inline(__always)  public func MDKDispatch_queue_async_safe(_ queue:DispatchQueue , _ action:@escaping ()->()) -> () {
 	if let currentQueueLabel = OperationQueue.current?.underlyingQueue?.label {
 		if queue.label == currentQueueLabel {
 			action()
@@ -588,7 +588,7 @@ extension UIAlertController{
 	}
 	queue.async(execute: action)
 }
-@inline(__always)  func MDKDispatch_main_async_safe(_ action:@escaping ()->()) -> () {
+@inline(__always)  public func MDKDispatch_main_async_safe(_ action:@escaping ()->()) -> () {
 	MDKDispatch_queue_async_safe(DispatchQueue.main, action)
 }
 #endif
