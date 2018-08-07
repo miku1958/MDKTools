@@ -96,9 +96,9 @@ a  tools
     swift.source_files = 'Swift/*.{swift}'
     end
 
-    s.subspec 'objc' do |objc|
-    objc.source_files = 'Objc/*.{h,m}'
-    end
+    # s.subspec 'objc' do |objc|
+    # objc.source_files = 'Objc/*.{h,m}'
+    # end
 
   # s.public_header_files = "Classes/**/*.h"
 
