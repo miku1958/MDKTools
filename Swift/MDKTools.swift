@@ -285,7 +285,7 @@ public var MDKiOS_Machine_Type : MDKiOSMachineType{
 
 
 func creat_iOS_info()->(){
-
+	return
 
 	var mib:[Int32] = [CTL_HW,HW_MACHINE];
 	var len:size_t = 0;
