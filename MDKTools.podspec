@@ -1,10 +1,8 @@
-
-
 Pod::Spec.new do |s|
 
 
   s.name         = "MDKTools"
-  s.version      = "1.0.2"
+  s.version      = "1.0.3"
   s.summary      = "a tools"
 
 
@@ -17,7 +15,7 @@ a  tools
   s.license      = "Mozilla"
 
 
-  s.author             = { "miku1958" => "email@address.com" }
+  s.author             = { "miku1958" => "v.v1958@qq.com" }
 
   s.platform     = :ios, "8.0"
 
@@ -25,13 +23,14 @@ a  tools
 
 
 
-    s.subspec 'swift' do |swift|
-    swift.source_files = 'Swift/*.{swift}'
-    end
+  s.subspec 'swift' do |swift|
+  swift.source_files = 'Swift/*.{swift}'
+  end
 
+  s.subspec 'objc' do |objc|
+  objc.source_files = 'ObjC/*.{h,m}'
+  end
 
-  s.swift_version = '4.0'
   s.requires_arc = true
-
-
+  s.swift_version = '4.0'
 end
