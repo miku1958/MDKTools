@@ -129,8 +129,8 @@ public var MDKiPhoneXInset: CGFloat {
 }
 //MARK: 	颜色相关
 ///获得RGBA颜色
-@inline(__always) public func MDKColor(_ red: Double, _ green: Double, _ blue: Double , withAlpha alpha: Double) -> UIColor {
-	if MDKiOS_Machine_Type == .iPhone , MDKiOS_MachineModel > 9 , #available(iOS 10.0, *) {
+@inline(__always) public func MDKColor(_ red: Double, _ green: Double, _ blue: Double, withAlpha alpha: Double) -> UIColor {
+	if MDKiOS_Machine_Type == .iPhone, MDKiOS_MachineModel > 9, #available(iOS 10.0, *) {
 		return UIColor(displayP3Red: CGFloat(red/255.0), green: CGFloat(green/255.0), blue: CGFloat(blue/255.0), alpha: CGFloat(alpha))
 	}
 	return UIColor(red: CGFloat(red/255.0), green: CGFloat(green/255.0), blue: CGFloat(blue/255.0), alpha: CGFloat(alpha))
@@ -152,7 +152,7 @@ public var MDKiPhoneXInset: CGFloat {
 }
 
 ///16进制转换RGBA2.0, 单独设置alpha
-@inline(__always) public func MDKColorFrom(Hex intValue: UInt , setAlpha alpha: Double) -> UIColor {
+@inline(__always) public func MDKColorFrom(Hex intValue: UInt, setAlpha alpha: Double) -> UIColor {
 	return MDKColor((Double((intValue & 0xFF0000) >> 16)), Double((intValue & 0xFF00) >> 8), Double(intValue & 0xFF), withAlpha: alpha)
 }
 extension String {
@@ -211,7 +211,7 @@ public var MDKRandomColor: UIColor {
 
 
 ///从NSBundle加载Nib数组
-@inline(__always) public func MDKLoadXibArr(nibNamed: String , owner: Any? , option: [UINib.OptionsKey: Any]?) -> [UIView] {
+@inline(__always) public func MDKLoadXibArr(nibNamed: String, owner: Any?, option: [UINib.OptionsKey: Any]?) -> [UIView] {
 	return Bundle.main.loadNibNamed(nibNamed, owner: owner, options: option) as! [UIView]
 }
 
@@ -487,7 +487,7 @@ extension UITableView {
 			className = String(splitArr.last!)
 		}
 
-		if let path = Bundle.main.path(forResource: className , ofType: "nib"), FileManager.default.fileExists(atPath: path) {
+		if let path = Bundle.main.path(forResource: className, ofType: "nib"), FileManager.default.fileExists(atPath: path) {
 			register(UINib(nibName: className, bundle: nil), forCellReuseIdentifier: classFullName)
 		} else {
 			register(cellClass, forCellReuseIdentifier: classFullName)
@@ -506,7 +506,7 @@ extension UITableView {
 			className = String(splitArr.last!)
 		}
 
-		if let path = Bundle.main.path(forResource: className , ofType: "nib"), FileManager.default.fileExists(atPath: path) {
+		if let path = Bundle.main.path(forResource: className, ofType: "nib"), FileManager.default.fileExists(atPath: path) {
 			register(UINib(nibName: className, bundle: nil), forHeaderFooterViewReuseIdentifier: classFullName)
 		} else {
 			register(headerClass, forHeaderFooterViewReuseIdentifier: classFullName)
@@ -524,7 +524,7 @@ extension UICollectionView {
 			className = String(splitArr.last!)
 		}
 
-		if let path = Bundle.main.path(forResource: className , ofType: "nib"), FileManager.default.fileExists(atPath: path) {
+		if let path = Bundle.main.path(forResource: className, ofType: "nib"), FileManager.default.fileExists(atPath: path) {
 			register(UINib(nibName: className, bundle: nil), forCellWithReuseIdentifier: classFullName)
 		} else {
 			register(cellClass, forCellWithReuseIdentifier: classFullName)
@@ -539,7 +539,7 @@ extension UICollectionView {
 		MDKRegister(viewClass: headerClass, isHeader: true)
 	}
 
-	private func MDKRegister(viewClass: AnyClass , isHeader: Bool) -> () {
+	private func MDKRegister(viewClass: AnyClass, isHeader: Bool) -> () {
 
 		var kind = UICollectionView.elementKindSectionHeader
 
@@ -554,8 +554,8 @@ extension UICollectionView {
 			className = String(splitArr.last!)
 		}
 
-		if let path = Bundle.main.path(forResource: className , ofType: "nib"), FileManager.default.fileExists(atPath: path) {
-			register(UINib(nibName: className, bundle: nil), forSupplementaryViewOfKind: kind , withReuseIdentifier: classFullName)
+		if let path = Bundle.main.path(forResource: className, ofType: "nib"), FileManager.default.fileExists(atPath: path) {
+			register(UINib(nibName: className, bundle: nil), forSupplementaryViewOfKind: kind, withReuseIdentifier: classFullName)
 		} else {
 			register(viewClass, forSupplementaryViewOfKind: kind, withReuseIdentifier: classFullName)
 		}
@@ -567,7 +567,7 @@ extension UIFont {
 		let Size = self.pointSize;
 		var fontName = self.fontName;
 
-		if let _range = fontName.range(of: "-") , !_range.isEmpty {
+		if let _range = fontName.range(of: "-"), !_range.isEmpty {
 			fontName.replaceSubrange(_range.upperBound ... fontName.endIndex, with: "Light")
 			if let font = UIFont(name: fontName, size: Size) {
 				return font
@@ -603,37 +603,37 @@ extension UIAlertController {
 	public typealias UIAlertActionClose = (UIAlertAction)->()
 
 	@discardableResult
-	public func MDKAdd(Default Action: @escaping UIAlertActionClose, title: String , handler: UIAlertActionClose? = nil) -> UIAlertController {
+	public func MDKAdd(Default Action: @escaping UIAlertActionClose, title: String, config: UIAlertActionClose? = nil) -> UIAlertController {
 		let action = UIAlertAction(title: title, style: .default, handler: Action)
-		handler?(action)
+		config?(action)
 		addAction(action)
 		return self
 	}
 	@discardableResult
-	public func MDKAdd(Cancel Action: @escaping (UIAlertAction)->(), title: String , handler: UIAlertActionClose? = nil) -> UIAlertController {
+	public func MDKAdd(Cancel Action: @escaping (UIAlertAction)->(), title: String, config: UIAlertActionClose? = nil) -> UIAlertController {
 		let action = UIAlertAction(title: title, style: .cancel, handler: Action)
-		handler?(action)
+		config?(action)
 		addAction(action)
 		return self
 	}
 	@discardableResult
-	public func MDKAdd(Destructive Action: @escaping (UIAlertAction)->(), title: String , handler: UIAlertActionClose? = nil) -> UIAlertController {
+	public func MDKAdd(Destructive Action: @escaping (UIAlertAction)->(), title: String, config: UIAlertActionClose? = nil) -> UIAlertController {
 		let action = UIAlertAction(title: title, style: .destructive, handler: Action)
-		handler?(action)
+		config?(action)
 		addAction(action)
 		return self
 	}
 
 	public typealias UIAlertTextFieldClose = (UITextField)->()
 	@discardableResult
-	public func MDKAdd(TextField Action: @escaping UIAlertTextFieldClose , handler: UIAlertTextFieldClose? = nil) -> UIAlertController {
+	public func MDKAdd(TextField Action: @escaping UIAlertTextFieldClose, config: UIAlertTextFieldClose? = nil) -> UIAlertController {
 		let textFieldBefore = self.textFields ?? []
 		addTextField(configurationHandler: Action)
 		let textFieldAfter = self.textFields?.filter() {textField in
 			return !textFieldBefore.contains(textField)
 		}
 		if textFieldAfter?.count ?? 0 > 0 {
-			handler?((textFieldAfter?.first)!)
+			config?((textFieldAfter?.first)!)
 		}
 
 		return self
@@ -647,7 +647,7 @@ extension UIAlertController {
 
 
 #if canImport(Foundation)
-@inline(__always) public func MDKDispatch_queue_async_safe(_ queue: DispatchQueue , _ action: @escaping ()->()) -> () {
+@inline(__always) public func MDKDispatch_queue_async_safe(_ queue: DispatchQueue, _ action: @escaping ()->()) -> () {
 	if let currentQueueLabel = OperationQueue.current?.underlyingQueue?.label {
 		if queue.label == currentQueueLabel {
 			action()
