@@ -211,38 +211,116 @@ public var MDKRandomColor : UIColor {
 
 
 ///从NSBundle加载Nib数组
-@inline(__always) public func MDKLoadXibArr(nibNamed:String , owner:Any? , option:[AnyHashable : Any]?) -> [UIView] {
+@inline(__always) public func MDKLoadXibArr(nibNamed:String , owner:Any? , option:[UINib.OptionsKey : Any]?) -> [UIView] {
 	return Bundle.main.loadNibNamed(nibNamed, owner: owner, options: option) as! [UIView]
 }
-///通过一个字典来创建NSAttributedString,key可以是NSString,UIImage,NSAttributedString,value必须是NSDictionary;UIImage的value必须是@(CGRect)作为bounds,如果为空则用UIImage.size;NSAttributedString的value是无效的传@{}就行
-//typealias AttDictionary = [NSAttributedStringKey : AnyHashable]
-//typealias StringAttDictionary = [String : AttDictionary]
-//typealias StringAttArr = [StringAttDictionary]
-//
-//func MDKAttString(_ strArrDic:[StringAttArr : StringAttDictionary]) -> NSAttributedString {
-//	return MDKAttString(strArrDic.keys.first ?? [], commonAttribute: strArrDic.values.first)
-//}
-//func MDKAttString(_ strArr:StringAttArr , commonAttribute:StringAttDictionary? = nil) -> NSAttributedString {
-//
-//	let attStr = NSMutableAttributedString(string: "")
-//
-//	for strDic in strArr {
-//		for (key,_obj) in strDic {
-//			var obj = _obj
-//			if (commonAttribute != nil) {
-//				var objM = commonAttribute!;
-//				for object in obj {
-//					objM[(object.key as! String)] = object.value as! AttDictionary
-//				}
-//				obj = objM;
-//			}
-//			attStr.append(NSAttributedString(string: key, attributes:obj))
-//		}
-//	}
-//
-//
-//	return attStr;
-//}
+
+//MARK:	MDKAttString begin
+public protocol MDKAStringDictionaryKeyable: Hashable {}
+public protocol MDKAStringDictionaryValuable: Hashable {}
+public protocol MDKAStringParable {}
+
+extension String: MDKAStringParable, MDKAStringDictionaryKeyable {}
+extension NSString: MDKAStringParable, MDKAStringDictionaryKeyable {}
+extension UIImage: MDKAStringParable, MDKAStringDictionaryKeyable {}
+extension NSAttributedString: MDKAStringParable, MDKAStringDictionaryKeyable {}
+
+extension Dictionary: MDKAStringDictionaryValuable where Key == NSAttributedString.Key, Value: Hashable {}
+extension Dictionary: MDKAStringParable where Key: MDKAStringDictionaryKeyable, Value: MDKAStringDictionaryValuable {}
+
+extension CGRect: MDKAStringDictionaryValuable {
+	public var hashValue: Int {
+		var hasher = Hasher()
+		hash(into: &hasher)
+		return hasher.finalize()
+	}
+	public func hash(into hasher: inout Hasher) {
+		hasher.combine(origin.x)
+		hasher.combine(origin.y)
+		hasher.combine(size.width)
+		hasher.combine(size.height)
+	}
+}
+
+
+/*
+📖MDKAStringParable允许传的类型:
+[MDKAStringDictionaryKeyable: MDKAStringDictionaryValuable](具体类型看下面)
+
+📖MDKAStringDictionaryKeyable允许传的类型:
+NSAttributedString, String, NSString, UIImage
+
+📖当MDKAStringDictionaryKeyable为String, NSString时, 字符串属性MDKAStringDictionaryValuable传入:
+[NSAttributedString.Key: AnyHashable]
+✒️比方: MDKAttString([“我”: [.font: UIFont()]], [“不要”: [.foregroundColor: UIColor.red]])
+
+
+当MDKAStringDictionaryKeyable为UIImage时, 图片属性MDKAStringDictionaryValuable传入:CGRect
+✒️比方: MDKAttString([“我”: [.font: UIFont()]], [#imageLiteral(resourceName: ❤️): CGRect], [“你”: [.foregroundColor: UIColor.red]])
+
+📖由于swift编译器的限制(不能把[: ]当成[MDKAStringDictionaryKeyable: MDKAStringDictionaryValuable]处理...). 所以这里改成: 如果NSAttributedString, String, NSString, UIImage不需要后面的属性, 可以直接把MDKAStringDictionaryKeyable作为MDKAStringParable直接传就行, 之后String 会拿commonAttribute作为属性来处理的
+✒️比方: MDKAttString(“我”, #imageLiteral(resourceName: ❤️), “你”, commonAttribute: [...])
+ 
+ 📖由于swift中Any不能被extension, 所以原本的Attributes类型
+ 	[NSAttributedString.Key: Any]
+ 需要写成
+ 	[NSAttributedString.Key: AnyHashable]
+ 或者用
+ 	MDKAttributes
+*/
+public typealias MDKAttributes = [NSAttributedString.Key: AnyHashable]
+public func MDKAttString(_ paras: MDKAStringParable..., commonAttribute: MDKAttributes = [: ]) -> NSAttributedString {
+	
+	let attStr = NSMutableAttributedString(string: "")
+	
+	for para in paras {
+		if let para = para as? [AnyHashable: AnyHashable] {
+			for (key, obj) in para {
+				if let str = key as? NSAttributedString, var atts = obj as? MDKAttributes {
+					let strm = NSMutableAttributedString(attributedString: str)
+					
+					atts.merge(commonAttribute) { (obj1, _) in obj1 }
+					strm.setAttributes(atts, range: NSRange(location: 0, length: strm.length))
+					attStr.append(strm)
+				}else if let str = key as? String, var atts = obj as? MDKAttributes {
+					atts.merge(commonAttribute) { (obj1, _) in obj1 }
+					attStr.append(NSAttributedString(string: str, attributes: atts))
+				} else if let image = key as? UIImage {
+					let place = "\u{FFFC} "
+					
+					let atr = NSMutableAttributedString(string: place)
+					
+					let attach = NSTextAttachment()
+					attach.image = image
+					
+					var bounds = CGRect(origin: CGPoint(x: 0, y: -2), size: image.size)
+					if let targetBounds = obj as? CGRect, targetBounds != .zero {
+						bounds = targetBounds
+					}
+					
+					attach.bounds = bounds
+					atr.setAttributes([.attachment: attach], range: NSRange(location: 0, length: atr.length))
+					attStr.append(atr)
+				}
+			}
+		} else {
+			if let para = para as? NSAttributedString {
+				attStr.append(MDKAttString([para: commonAttribute]))
+			}
+			if let para = para as? String {
+				attStr.append(MDKAttString([para: commonAttribute]))
+			}
+			if let para = para as? UIImage {
+				attStr.append(MDKAttString([para: commonAttribute]))
+			}
+		}
+		
+	}
+	
+	return attStr
+}
+//MARK:	MDKAttString end
+
 ///改变状态栏颜色
 @inline(__always) public func MDKChangeStatusBarBackgroundColor(color:UIColor) -> () {
 	if
@@ -285,29 +363,19 @@ public var MDKiOS_Machine_Type : MDKiOSMachineType{
 
 
 func creat_iOS_info()->(){
-	return
-
-	var mib:[Int32] = [CTL_HW,HW_MACHINE];
+	
 	var len:size_t = 0;
+	let key = "hw.machine"
+	
+	let ret = sysctlbyname(key, nil, &len, nil, 0)
+	
+	guard ret == 0 else { return }
+	
+	var p = [CChar](repeating: 0, count: Int(len))
+	sysctlbyname(key, &p, &len, nil, 0);
 
-
-
-	let machine = malloc(len);
-	sysctl(&mib, u_int(mib.count), machine, &len, nil, 0);
-
-	guard
-		let machineChar = machine?.load(as: UnsafePointer<CChar>.self)  ,
-		var platform = String(cString: machineChar, encoding: .ascii)
-	else { return }
-
-
-	free(machine);
-
-
-
-
-
-
+	
+	var platform = String(cString: p)
 	platform = platform.replacingOccurrences(of: ",", with: ".")
 
 	if platform.contains("iPhone") {
@@ -473,10 +541,10 @@ extension UICollectionView{
 
 	private func MDKRegister(viewClass:AnyClass , isHeader:Bool) -> () {
 
-		var kind = UICollectionElementKindSectionHeader
+		var kind = UICollectionView.elementKindSectionHeader
 
 		if !isHeader {
-			kind = UICollectionElementKindSectionFooter
+			kind = UICollectionView.elementKindSectionFooter
 		}
 
 		let classFullName = NSStringFromClass(viewClass)
