@@ -47,7 +47,7 @@ public var MDKRootViewController: UIViewController {
 public var MDKTopNavController: UINavigationController? {
 
 	var nav = MDKRootViewController;
-	var lastNav: UINavigationController? = nil;
+	var lastNav: UINavigationController? = MDKRootViewController.navigationController;
 	while (true) {
 		if nav.isKind(of: UINavigationController.self) {
 			lastNav = nav as? UINavigationController;
@@ -610,31 +610,26 @@ extension UIAlertController {
 		return self
 	}
 	@discardableResult
-	public func MDKAdd(Cancel Action: @escaping (UIAlertAction)->(), title: String, config: UIAlertActionClose? = nil) -> UIAlertController {
+	public func MDKAdd(Cancel Action: @escaping UIAlertActionClose, title: String, config: UIAlertActionClose? = nil) -> UIAlertController {
 		let action = UIAlertAction(title: title, style: .cancel, handler: Action)
 		config?(action)
 		addAction(action)
 		return self
 	}
 	@discardableResult
-	public func MDKAdd(Destructive Action: @escaping (UIAlertAction)->(), title: String, config: UIAlertActionClose? = nil) -> UIAlertController {
+	public func MDKAdd(Destructive Action: @escaping UIAlertActionClose, title: String, config: UIAlertActionClose? = nil) -> UIAlertController {
 		let action = UIAlertAction(title: title, style: .destructive, handler: Action)
 		config?(action)
 		addAction(action)
 		return self
 	}
 
-	public typealias UIAlertTextFieldClose = (UITextField)->()
 	@discardableResult
-	public func MDKAdd(TextField Action: @escaping UIAlertTextFieldClose, config: UIAlertTextFieldClose? = nil) -> UIAlertController {
-		let textFieldBefore = self.textFields ?? []
-		addTextField(configurationHandler: Action)
-		let textFieldAfter = self.textFields?.filter() {textField in
-			return !textFieldBefore.contains(textField)
-		}
-		if textFieldAfter?.count ?? 0 > 0 {
-			config?((textFieldAfter?.first)!)
-		}
+	public func MDKAdd(TextField config: ((UITextField) -> Void)? = nil) -> UIAlertController {
+		
+		assert(preferredStyle == .alert, "只有alert支持添加textField")
+		
+		addTextField(configurationHandler: config)
 
 		return self
 	}
