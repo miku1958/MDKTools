@@ -252,7 +252,7 @@ typedef  UIAlertController * (^MDKAddActionType)(NSString* title,UIAlertCreateAc
 
 typedef void (^UIAlertCreateTextFieldBlock)(UITextField *createdTextField);
 typedef void (^UIAlertHandleTextFieldBlock)(UITextField *handlerTextField);
-typedef UIAlertController * (^MDKAddTextFieldType)(UIAlertCreateTextFieldBlock createBlock , UIAlertHandleTextFieldBlock handlerBoock);
+typedef UIAlertController * (^MDKAddTextFieldType)(UIAlertHandleTextFieldBlock handlerBoock);
 @interface UIAlertController(quick)
 @property (nonatomic, readonly, copy) MDKAddActionType MDKAddDefaultAction;
 @property (nonatomic, readonly, copy) MDKAddActionType MDKAddCancelAction;

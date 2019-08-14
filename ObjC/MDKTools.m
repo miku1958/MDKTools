@@ -788,20 +788,9 @@ void MDKSleep(CGFloat time){
 }
 - (MDKAddTextFieldType)MDKAddTextField{
 
-	return ^UIAlertController *(UIAlertCreateTextFieldBlock action, UIAlertHandleTextFieldBlock handler) {
-		NSArray *textFieldsBefore = self.textFields.copy;
-		[self addTextFieldWithConfigurationHandler:action];
-
-		if (handler) {
-			NSArray *textFieldsAfter = self.textFields.copy;
-
-			NSArray *textFieldsNew = [textFieldsAfter filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, id bindings) {
-				return ![textFieldsBefore containsObject:evaluatedObject];
-			}]];
-			if (textFieldsNew.count) {
-				handler(textFieldsNew.firstObject);
-			}
-		}
+	return ^UIAlertController *(UIAlertHandleTextFieldBlock handler) {
+		NSAssert(self.preferredStyle == UIAlertControllerStyleAlert, @"textField need UIAlertControllerStyleAlert");
+		[self addTextFieldWithConfigurationHandler:handler];
 		return self;
 	};
 }
